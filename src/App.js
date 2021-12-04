@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState } from "react";
+import { Row, Divider} from "antd";
+import foods from "./foods.json";
+import FoodBox from "./components/FoodBox";
+import AddFoodForm from "./components/AddFoodForm";
 
 function App() {
+  const [foodList, setFoodList] = useState(foods);
+  const [notSearchFoodList, setNotSearchFoodList] = useState(foods);
+
+  const searchFood = (searchText) => {
+    const searchedFood = notSearchFoodList.filter(food =>{
+      return food.name.toLocaleLowerCase().includes(searchText.toLocaleLowerCase()) 
+    })
+    setFoodList(searchedFood)
+  }
+
+  const deleteFoodAndUpdate = (selectedFood)=>{
+    const deletedFood = foodList.filter(food=>{
+      return selectedFood !== food.name;
+    })
+    setFoodList(deletedFood)
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Divider>Add Food Entry</Divider>
+      <AddFoodForm foodList={foodList} setFood={setFoodList} setNotSearchFoodList={setNotSearchFoodList}/>
+
+      <Divider> <SearchBar searchFood={searchFood}/> </Divider>
+          
+      <Divider>Food List</Divider>
+
+      <Row style={{ width: "100%", justifyContent: "center" }}>
+        {foodList.map((foods, index) => {
+          console.log(foodList);
+          return (
+            <div key={index}>
+              <FoodBox foods={foods} deleteFoodAndUpdate ={deleteFoodAndUpdate}/>
+            </div>
+          );
+        })}
+      </Row>
     </div>
   );
 }
